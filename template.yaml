@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Read and print a file from S3
+
+Globals:
+  Function:
+    Timeout: 3
+  Api:
+    TracingEnabled: true
+
+Resources:
+  S3ReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Timeout: 10
+      Policies:
+        - AmazonS3ReadOnlyAccess  # Provide read-only access to S3
+      Events:
+        S3ReadEvent:
+          Type: S3
+          Properties:
+            Bucket: sqs-s3s
+            Events: s3:ObjectCreated:*
+
+Outputs:
+  S3ReadFunction:
+    Description: Lambda Function ARN
+    Value: !GetAtt S3ReadFunction.Arn
+
